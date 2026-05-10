@@ -53,8 +53,7 @@ def reverse_geocode(lat, lon):
     res = requests.get(url, headers={"User-Agent": "cycling-app"})
     data = res.json()
     return data.get("address", {}).get("state")  # 都道府県名
-
-   def detect_route_from_image(image_path):
+def detect_route_from_image(image_path):
     latlon = get_lat_lon(image_path)
     if not latlon:
         return {"error": "GPS情報がありません"}
