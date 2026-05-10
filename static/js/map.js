@@ -65,3 +65,8 @@ form.addEventListener("submit", async (e) => {
     messageDiv.textContent = "通信エラーが発生しました。";
   }
 });
+if (data.suggestions) {
+    showRouteOptions(data.suggestions);
+} else {
+    L.geoJSON(data).addTo(map);
+}

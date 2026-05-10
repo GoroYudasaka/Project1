@@ -44,7 +44,7 @@ def upload():
     route_geojson = detect_route_from_image(filepath)
 
     # フロント側で Leaflet にそのまま渡せるように GeoJSON を返す
-    return jsonify({"route": route_geojson})
+    return jsonify(route_geojson)
 
 
 if __name__ == "__main__":
