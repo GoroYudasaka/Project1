@@ -1,34 +1,61 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>サイクリングルート塗りつぶしマップ</title>
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <meta charset="utf-8">
+    <title>Route Detector</title>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        #map { height: 500px; margin-top: 20px; }
+    </style>
 </head>
 <body>
-  <h1>サイクリングルート塗りつぶしマップ</h1>
 
-  <form id="upload-form">
-    <input type="file" id="file-input" name="file" accept="image/jpeg" />
-    <button type="submit">ルート画像をアップロード</button>
-  </form>
+<h2>画像からルートを自動検出</h2>
 
-  <div id="message"></div>
+<form id="uploadForm">
+    <input type="file" id="fileInput" accept="image/*">
+    <button type="submit">アップロード</button>
+</form>
 
-  <div id="map"></div>
+<div id="map"></div>
 
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
-  <script src="{{ url_for('static', filename='js/map.js') }}"></script>
-  <div id="route-options" style="display:none;"></div>
+<script>
+    const map = L.map('map').setView([35.0, 135.0], 5)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18
+    }).addTo(map)
+
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+        e.preventDefault()
+
+        const file = document.getElementById("fileInput").files[0]
+        if (!file) return alert("画像を選択してください")
+
+        const formData = new FormData()
+        formData.append("file", file)
+
+        const res = await fetch("/upload", {
+            method: "POST",
+            body: formData
+        })
+
+        const geojson = await res.json()
+
+        // ルート描画
+        L.geoJSON(geojson, {
+            style: { color: geojson.properties?.color || "#00aaff" }
+        }).addTo(map)
+
+        // 地図をルートに合わせる
+        const bounds = L.geoJSON(geojson).getBounds()
+        map.fitBounds(bounds)
+    })
+</script>
+
 </body>
 </html>
