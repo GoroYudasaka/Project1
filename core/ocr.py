@@ -3,7 +3,7 @@ from PIL import Image
 import pytesseract
 
 # 日本語OCRを有効化
-pytesseract.pytesseract.tesseract_cmd = "/usr/local/bin/tesseract"
+pytesseract.pytesseract.tesseract_cmd = "/opt/homebrew/bin/tesseract"
 
 # よく出る地名辞書（必要に応じて増やせる）
 PLACE_KEYWORDS = {
